@@ -21,7 +21,7 @@ class OllamaService(BaseService):
     )
 
     def process_images(self, images):
-        image_bytes = [self.img_to_base64(img) for img in images]
+        image_bytes = [self.img_to_base64(img, format="PNG") for img in images]
         return image_bytes
 
     def __call__(
@@ -37,10 +37,23 @@ class OllamaService(BaseService):
         headers = {"Content-Type": "application/json"}
 
         schema = response_schema.model_json_schema()
+        defs = schema.get("$defs", {})
+
+        def resolve_refs(obj):
+            if isinstance(obj, dict):
+                if "$ref" in obj:
+                    ref_name = obj["$ref"].split("/")[-1]
+                    return resolve_refs(defs.get(ref_name, obj))
+                return {k: resolve_refs(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [resolve_refs(i) for i in obj]
+            return obj
+
+        resolved_properties = resolve_refs(schema.get("properties", {}))
         format_schema = {
             "type": "object",
-            "properties": schema["properties"],
-            "required": schema["required"],
+            "properties": resolved_properties,
+            "required": schema.get("required", []),
         }
 
         image_bytes = self.format_image_for_llm(image)
@@ -51,6 +64,10 @@ class OllamaService(BaseService):
             "stream": False,
             "format": format_schema,
             "images": image_bytes,
+            "options": {
+                "num_ctx": 8192,
+                "num_gpu": 0,
+            },
         }
 
         try:
