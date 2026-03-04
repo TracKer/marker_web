@@ -66,13 +66,15 @@ You'll specify your judgement in json format - first whether Table 2 should be m
 
 Table 2 should be merged at the bottom of Table 1 if Table 2 has no headers, and the rows have similar values, meaning that Table 2 continues Table 1. Table 2 should be merged to the right of Table 1 if each row in Table 2 matches a row in Table 1, meaning that Table 2 contains additional columns that augment Table 1.
 
+Important: The HTML representations may be incomplete due to page breaks — for example, Table 2's HTML may be missing column headers that are actually visible in the Table 2 image, because those headers were parsed as text outside the table.  Always trust the images over the HTML when they disagree.  If the Table 2 image shows a table with the same column structure as Table 1, treat them as the same table even if the HTML for Table 2 appears incomplete or has fewer columns.
+
 Only merge Table 1 and Table 2 if Table 2 cannot be interpreted without merging.  Only merge Table 1 and Table 2 if you can read both images properly.
 
 **Instructions:**
 1. Carefully examine the provided table images.  Table 1 is the first image, and Table 2 is the second image.
-2. Examine the provided html representations of Table 1 and Table 2.
-3. Write a description of Table 1.
-4. Write a description of Table 2.
+2. Examine the provided html representations of Table 1 and Table 2.  Note that the HTML may be incomplete — headers visible in the image may be missing from the HTML due to page-break parsing issues.
+3. Write a description of Table 1, based on the image.
+4. Write a description of Table 2, based on the image (not just the HTML).
 5. Analyze whether Table 2 should be merged into Table 1, and write an explanation.
 6. Output your decision on whether they should be merged, and merge direction.
 **Example:**
